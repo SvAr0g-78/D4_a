@@ -1,0 +1,20 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+The Best News: {{ post }}
+{% endblock title %}
+
+{% block content %}
+<br>
+<h3>{{ post }}</h3>
+<br>
+{{ post.text | Censor:"" }}
+<br>
+<br>
+<hr>
+Дата создания: {{ post.dateCreation | date:'M d Y' }}; автор: {{ post.author }}; рейтинг: {{ post.rating }}; номер: {{ post.id }}
+<br>
+<hr>
+{% endblock content %}

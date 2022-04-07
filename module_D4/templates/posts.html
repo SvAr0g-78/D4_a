@@ -1,0 +1,63 @@
+<!--  наследуемся от шаблона default.html, который мы создавали ещё во времена flatpages -->
+{% extends 'flatpages/default.html' %}
+
+<!-- Название у нас будет products -->
+{% block title %}
+Новости
+{% endblock title %}
+
+{% block content %}
+    <h1>Все Новости</h1>
+    <h3>{{ time_now|date:'d M Y' }}</h3>
+
+        <table cellspacing="30" cellpadding="20"  width="100%">  <!-- Параметры таблицы пространствоЯчеек=5 заполнениеЯчейки=50 ширина=100% -->
+            <tr>
+                <td align="center">
+                    <h4>Дата публикации</h4>
+                </td>
+                <td align="center">
+                    <h4>Заголовок</h4>
+                </td>
+                <td align="center">
+                    <h4>Первые 20 слов</h4>
+                </td>
+            </tr>
+            {% for post in posts %} <!-- Для каждого товара будете генерироваться новая строчка, т. е. новый html-код. При этом сам цикл работает точно также, как и в Python. product — переменная цикла, т. е. наш товар, взятый из общего списка -->
+            <tr>
+                <td>
+                    {{ post.dateCreation }}
+                </td>
+                <td>
+                    {{ post.title|truncatechars:30 }} <!-- не забываем, что переменные в шаблоне ничем не отличаются от переменных в Python. Здесь также можно получать доступ к полям класса. Например, здесь мы выводим имя, в следующем столбце описание, и т. д.  -->
+                </td>
+                <td>
+                    {{ post.text|truncatewords:20 }} <!-- дописываем специальный фильтр, чтобы ограничить количество символов до 15. Все остальные символы превратятся в многоточие. -->
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+    <!-- Проверяем что поддерживается постраничный вывод -->
+    {% if is_paginated %}
+
+        <!-- Если доступна предыдущая страница, то даем ссылку на нее и самую первую страницу -->
+        {% if page_obj.has_previous %}
+            <a href="?page=1">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}"><<<</a>
+        {% endif %}
+
+        <!-- Показываем только текущую страницу и ближайшие к ней, чтобы список не тянулся -->
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a>{{ num }}</a>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{num}}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Если есть следующая страница, то даем ссылку на нее и на самую последнюю страницу -->
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">>>></a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+    {% endif %}
+{% endblock content %}
